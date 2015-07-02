@@ -65,7 +65,6 @@ public abstract class Model {
 
 	public final void delete() {
 		Cache.openDatabase().delete(mTableInfo.getTableName(), idName+"=?", new String[] { getId().toString() });
-		Cache.removeEntity(this);
 
 		Cache.getContext().getContentResolver()
 				.notifyChange(ContentProvider.createUri(mTableInfo.getType(), mId), null);
@@ -242,11 +241,7 @@ public abstract class Model {
 					final long entityId = cursor.getLong(columnIndex);
 					final Class<? extends Model> entityType = (Class<? extends Model>) fieldType;
 
-					Model entity = Cache.getEntity(entityType, entityId);
-					if (entity == null) {
-						entity = new Select().from(entityType).where(idName+"=?", entityId).executeSingle();
-					}
-
+					Model entity = new Select().from(entityType).where(idName+"=?", entityId).executeSingle();
 					value = entity;
 				}
 				else if (ReflectionUtils.isSubclassOf(fieldType, Enum.class)) {
@@ -274,10 +269,6 @@ public abstract class Model {
 			catch (SecurityException e) {
 				Log.e(e.getClass().getName(), e);
 			}
-		}
-
-		if (mId != null) {
-			Cache.addEntity(this);
 		}
 	}
 

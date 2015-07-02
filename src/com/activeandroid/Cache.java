@@ -20,7 +20,6 @@ import java.util.Collection;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.support.v4.util.LruCache;
 
 import com.activeandroid.serializer.TypeSerializer;
 import com.activeandroid.util.Log;
@@ -40,8 +39,6 @@ public final class Cache {
 
 	private static ModelInfo sModelInfo;
 	private static DatabaseHelper sDatabaseHelper;
-
-	private static LruCache<String, Model> sEntities;
 
 	private static boolean sIsInitialized = false;
 
@@ -66,12 +63,6 @@ public final class Cache {
 		sModelInfo = new ModelInfo(configuration);
 		sDatabaseHelper = new DatabaseHelper(configuration);
 
-		// TODO: It would be nice to override sizeOf here and calculate the memory
-		// actually used, however at this point it seems like the reflection
-		// required would be too costly to be of any benefit. We'll just set a max
-		// object size instead.
-		sEntities = new LruCache<String, Model>(configuration.getCacheSize());
-
 		openDatabase();
 
 		sIsInitialized = true;
@@ -79,15 +70,9 @@ public final class Cache {
 		Log.v("ActiveAndroid initialized successfully.");
 	}
 
-	public static synchronized void clear() {
-		sEntities.evictAll();
-		Log.v("Cache cleared.");
-	}
-
 	public static synchronized void dispose() {
 		closeDatabase();
 
-		sEntities = null;
 		sModelInfo = null;
 		sDatabaseHelper = null;
 
@@ -126,20 +111,7 @@ public final class Cache {
 		return getIdentifier(entity.getClass(), entity.getId());
 	}
 
-	public static synchronized void addEntity(Model entity) {
-		sEntities.put(getIdentifier(entity), entity);
-	}
-
-	public static synchronized Model getEntity(Class<? extends Model> type, long id) {
-		return sEntities.get(getIdentifier(type, id));
-	}
-
-	public static synchronized void removeEntity(Model entity) {
-		sEntities.remove(getIdentifier(entity));
-	}
-
 	// Model cache
-
 	public static synchronized Collection<TableInfo> getTableInfos() {
 		return sModelInfo.getTableInfos();
 	}
