@@ -9,12 +9,12 @@
   <parent>
     <groupId>com.activeandroid</groupId>
     <artifactId>activeandroid-parent</artifactId>
-    <version>3.1-SNAPSHOT</version>
+    <version>3.3-SNAPSHOT</version>
   </parent>
 
   <groupId>com.activeandroid</groupId>
   <artifactId>activeandroid-tests</artifactId>
-  <version>3.1-SNAPSHOT</version>
+  <version>3.3-SNAPSHOT</version>
   <packaging>apk</packaging>
   <name>ActiveAndroid - Tests</name>
 
